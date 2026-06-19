@@ -1,0 +1,16 @@
+{
+  "version": "1.8.2",
+  "build": 28,
+  "url": "/downloads/qordy-app.apk",
+  "sha1": "c0202b0e2a9654e374f94df03e9adb5e0d1a4edc",
+  "sha256": "b7610240fa65c6ebcecd0373ecc460d38aabd3306577d77ec0d6ddd0bc45908f",
+  "aabUrl": "/downloads/qordy-app.aab",
+  "sha256Aab": "570520ecc94803140a0334e179e02696cffe6809079417054fb5f9b181386f83",
+  "uploadCertificateSha256": "43:DD:C6:38:6D:11:4F:4F:08:B9:15:D9:7F:3A:02:EB:76:30:7F:61:FE:14:C4:F7:20:48:8A:E9:BC:1E:ED:D7",
+  "size": 66369466,
+  "releasedAt": "2026-04-23T17:05:00Z",
+  "minBuild": 1,
+  "required": false,
+  "package": "com.pofuduk.qordy",
+  "notes": "Build 28 (v1.8.2) — Android'de tüm pencereye uygulanan FLAG_SECURE kaldırıldı; ekran görüntüsü ve (cihaza göre) yerel ekran kaydı artık engellenmiyor. Uygulama simgesi yeni Q markalı görsel ile güncellendi (flutter_launcher_icons; adaptive arka plan #0E2F55). Integrity MethodChannel ve paket com.pofuduk.qordy aynı. Önceki sürümlerdeki giriş, desen/PIN/biyometri/2FA ve panel özellikleri korunuyor."
+}

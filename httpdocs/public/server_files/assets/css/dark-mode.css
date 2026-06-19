@@ -1,0 +1,50 @@
+/* QORDY Design System - Dark Mode */
+
+.dark-mode-toggle {
+    padding: 8px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dark-mode-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode-toggle .icon-sun,
+.dark-mode-toggle .icon-moon {
+    display: none;
+}
+
+body:not(.dark-mode) .dark-mode-toggle .icon-sun {
+    display: block;
+}
+
+body.dark-mode .dark-mode-toggle .icon-moon {
+    display: block;
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+body.dark-mode .bg-white {
+    background: #2a2a2a !important;
+}
+
+body.dark-mode .text-slate-900 {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .border-slate-200 {
+    border-color: #404040 !important;
+}
+
+body.dark-mode .menu-item-card {
+    background: #2a2a2a;
+    border-color: #404040;
+}

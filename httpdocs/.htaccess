@@ -1,0 +1,136 @@
+RewriteEngine On
+
+# Pass Authorization header to PHP (required for Bearer token auth with CGI/FastCGI)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# --------------------------------------------------------------------------
+# Hassas dosya / dizin erişim engeli (defense-in-depth)
+#
+# Plesk docroot burası (httpdocs/) olduğundan .env, .git, composer.*,
+# scripts/, tests/, storage/, vendor/, vb. dosyalar HTTP üzerinden
+# ulaşılabilir durumda kalırsa kaynak kodu ve sır sızar. WAF konfig
+# değişse dahi app-seviyesinde bu blok garanti verir.
+#
+# NOT: `^app/` burada bloklanır çünkü disk üzerindeki PHP backend
+# klasörüdür. React SPA için gelen `/app/*` istekleri aşağıda
+# public/app/* rewrite kuralına DÜŞMEDEN ÖNCE bu blok çalışacağı için,
+# SPA rewrite kurallarını bu bloktan ÖNCE tanımlamak gerekir.
+# Çözüm: SPA rewrite'ı da "L" ile erken bitir, böylece buraya hiç
+# gelmesin.
+# --------------------------------------------------------------------------
+
+# React SPA (Vite) bundle — `/app/*` taleplerini en önce `public/app/*`'e
+# yönlendir. [L] ile kural zinciri durur; aşağıdaki blok kuralları artık
+# `app/` pattern'ına değmez (URI yeniden yazıldı).
+RewriteCond %{REQUEST_URI} ^/app/
+RewriteRule ^app/(.*)$ public/app/$1 [L]
+
+# Asset kısa yolları
+RewriteCond %{REQUEST_URI} ^/public/assets/
+RewriteRule ^public/assets/(.*)$ public/assets/$1 [L]
+RewriteCond %{REQUEST_URI} ^/assets/
+RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
+# Artık app/ altındaki PHP backend klasörünü vs. güvenle bloklayabiliriz.
+RewriteRule ^\.env(\..*)?$            - [F,L]
+RewriteRule ^\.git(/|$)               - [F,L]
+RewriteRule ^composer\.(json|lock)$   - [F,L]
+RewriteRule ^package(-lock)?\.json$   - [F,L]
+RewriteRule ^yarn\.lock$              - [F,L]
+RewriteRule ^phpunit\.xml(\.dist)?$   - [F,L]
+RewriteRule ^Dockerfile               - [F,L]
+RewriteRule ^\.cursor(/|$)            - [F,L]
+RewriteRule ^\.vscode(/|$)            - [F,L]
+RewriteRule ^\.idea(/|$)              - [F,L]
+RewriteRule ^(app|tests|scripts|storage|vendor|database|migrations|node_modules|logs)(/|$) - [F,L]
+# Yedek / geçici dosyalar ve log / sql dump izleri
+RewriteRule \.(bak|orig|swp|swo|tmp|backup|old|sql|sql\.gz|log|ini|yaml|yml)$ - [F,L]
+
+# .ht* (htaccess, htpasswd) dosyaları
+<FilesMatch "^\.ht">
+    Require all denied
+</FilesMatch>
+
+# Dizin listelemesini kapat
+Options -Indexes
+ServerSignature Off
+
+# Redirect old /admin/ URLs to /qodmin/ (Super Admin panel)
+RewriteCond %{REQUEST_URI} ^/admin/(.*)$
+RewriteRule ^admin/(.*)$ /qodmin/$1 [R=301,L]
+
+# --------------------------------------------------------------------------
+# Trailing slash temizleme: /business/dashboard/ → /business/dashboard
+# Plesk 404'lerini engeller, SEO dostu
+# --------------------------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} ^(.+)/$
+RewriteRule ^(.+)/$ $1 [R=301,L]
+
+# --------------------------------------------------------------------------
+# Sık kullanılan yanlış/legacy URL'leri doğru route'a yönlendir (301)
+# Gerçek 404 kayıtlarından (access_ssl_log) tespit edildi.
+# NOT: /business/dashboard trailing-slash düzeltmesi yukarıdaki
+# "Trailing slash temizleme" kuralı ile yapılıyor. Burada ayrıca
+# "RewriteRule ^business/dashboard/?$ /business/dashboard" tanımlamak
+# ERR_TOO_MANY_REDIRECTS döngüsüne yol açıyordu (kendi kendini
+# yönlendiren URL); o yüzden bu satır kaldırıldı.
+# --------------------------------------------------------------------------
+RewriteRule ^business/business-settings/?$ /business/settings [R=301,L]
+RewriteRule ^business/hr/shifts/?$ /business/shifts [R=301,L]
+RewriteRule ^business/hr/leaves/?$ /business/leaves [R=301,L]
+RewriteRule ^business/screens/?$ /business/preparation-screens [R=301,L]
+RewriteRule ^business/finance/purchases/?$ /business/purchases [R=301,L]
+
+# Mobile / desktop binary installers — serve directly for speed and to avoid
+# PHP memory limits on large files. Any other /downloads/* request still
+# falls through to the PHP controller below (for secure downloads, tracking
+# metrics, etc.).
+RewriteCond %{REQUEST_URI} ^/downloads/.*\.(apk|aab|ipa|zip|dmg|exe|pkg)$ [NC]
+RewriteRule ^downloads/(.*)$ public/downloads/$1 [L]
+
+# Downloads route - let it go through PHP routing (don't serve file directly)
+RewriteCond %{REQUEST_URI} ^/downloads/
+RewriteRule ^downloads/(.*)$ public/index.php?url=downloads/$1 [QSA,L]
+
+# --------------------------------------------------------------------------
+# WebSocket: /ws -> 127.0.0.1:8080 (Ratchet)
+#
+# Bu bloğu, uygulama router'ına (public/index.php) DÜŞMEDEN ÖNCE çalıştırmak
+# zorundayız. Aksi takdirde /ws isteği PHP routing'e gider ve logda görülen
+# "Route not found: GET /ws" hatalarına yol açar. Plesk/nginx proxy katmanı
+# yoksa veya tenant subdomain'leri için proxy yapılandırılmamışsa bu kural
+# `wss://<host>/ws` taleplerini yerel Ratchet sunucusuna yönlendirir.
+#
+# Not: mod_proxy ve mod_proxy_wstunnel yüklü değilse bu blok sessizce
+# görmezden gelinir (Apache 2.4'te IfModule koruması).
+# --------------------------------------------------------------------------
+<IfModule mod_proxy.c>
+    <IfModule mod_proxy_wstunnel.c>
+        RewriteCond %{HTTP:Upgrade} =websocket [NC]
+        RewriteRule ^ws/?$ ws://127.0.0.1:8080/ [P,L]
+    </IfModule>
+</IfModule>
+
+# Dynamic robots.txt / sitemap.xml (generated by PHP; keeps Soro blog entries fresh)
+RewriteRule ^robots\.txt$  public/robots.php  [L]
+RewriteRule ^sitemap\.xml$ public/sitemap.php [L]
+
+# Legacy Turkish auth URLs → React SPA auth routes
+RewriteRule ^giris-yap/?$ /login [R=301,L]
+RewriteRule ^kayit-ol/?$ /register [R=301,L]
+
+# Redirect all requests to public/index.php without showing /public/ in URL
+# Handle subdirectory (e.g., /qordy)
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/assets/
+RewriteCond %{REQUEST_URI} !^/public/assets/
+RewriteCond %{REQUEST_URI} !^/app/
+RewriteCond %{REQUEST_URI} !^/downloads/
+RewriteCond %{REQUEST_URI} !^/ws$
+RewriteCond %{REQUEST_URI} !^/ws/
+# QSA flag causes infinite redirect loops when redirecting with query strings
+# Use L flag only to prevent query string append issues
+RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]

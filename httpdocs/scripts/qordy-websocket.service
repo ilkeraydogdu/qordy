@@ -1,0 +1,17 @@
+[Unit]
+Description=QORDY WebSocket Server (Print Bridge, Real-time)
+After=network.target mysql.service
+StartLimitInterval=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/vhosts/qordy.com/httpdocs
+ExecStartPre=/bin/bash -c 'rm -f /var/www/vhosts/qordy.com/httpdocs/storage/websocket.pid; kill $(lsof -ti :8080) 2>/dev/null; sleep 1; true'
+ExecStart=/bin/bash -c 'exec /opt/plesk/php/8.3/bin/php /var/www/vhosts/qordy.com/httpdocs/app/websocket/server.php >> /var/www/vhosts/qordy.com/logs/websocket-server.log 2>&1'
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

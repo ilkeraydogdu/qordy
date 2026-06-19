@@ -1,0 +1,123 @@
+# QORDY - Apache Configuration with AGGRESSIVE NO-CACHE
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Pass Authorization header to PHP (required for Bearer token auth with CGI/FastCGI)
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    
+    # Force HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Block direct access to sensitive files
+    RewriteRule ^\.env$ - [F,L]
+    RewriteRule ^\.git - [F,L]
+    RewriteRule ^composer\.(json|lock)$ - [F,L]
+    
+    # Flutter web app (/mobile-app): deep links → index.html (not PHP router)
+    RewriteCond %{REQUEST_URI} ^/mobile-app
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . mobile-app/index.html [L]
+
+    # If file or directory exists, serve it directly
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Route everything through index.php
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
+
+# CACHING POLICY — PHP controllers own Cache-Control on dynamic responses.
+# Apache only enforces no-cache on explicitly sensitive paths so public
+# pages (landing, /blog, /menu, …) can opt into caching per-controller.
+<IfModule mod_setenvif.c>
+    SetEnvIf Request_URI "^/(admin|qodmin|api|business|customer|waiter|kitchen|preparation-screen|superadmin|pos)(/|$)" QORDY_NOCACHE=1
+    SetEnvIf Request_URI "^/(login|register|logout|auth/)" QORDY_NOCACHE=1
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0" env=QORDY_NOCACHE
+    Header always set Pragma "no-cache" env=QORDY_NOCACHE
+    Header always set Expires "Thu, 01 Jan 1970 00:00:00 GMT" env=QORDY_NOCACHE
+
+    # Static Assets - LONG CACHE (Resimler, Fontlar) - 30 gün
+    <FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|ico|avif)$">
+        Header set Cache-Control "public, max-age=2592000, immutable"
+        Header set Vary "Accept-Encoding"
+        Header unset Pragma
+        Header unset Expires
+    </FilesMatch>
+
+    # Fonts - VERY LONG CACHE - 1 yıl (nadiren değişir)
+    <FilesMatch "\.(woff|woff2|ttf|eot|otf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set Vary "Accept-Encoding"
+        Header unset Pragma
+        Header unset Expires
+    </FilesMatch>
+
+    # Mobile/Desktop installers — force download + correct MIME type.
+    <FilesMatch "\.(apk|aab|ipa|pkg|dmg|exe)$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+        Header set Content-Disposition "attachment"
+        Header unset Pragma
+    </FilesMatch>
+
+    # CSS and JS — versioned via ?v=mtime query string, safe to cache long.
+    <FilesMatch "\.(css|js|mjs)$">
+        Header set Cache-Control "public, max-age=604800, must-revalidate"
+        Header set Vary "Accept-Encoding"
+        Header unset Pragma
+        Header unset Expires
+    </FilesMatch>
+
+    # Vite hash'li chunk'ları (name-XXXXXXXX.ext) — dosya içeriği değiştiğinde
+    # hash değişir, bu yüzden cache KALICI ve immutable yapılabilir (1 yıl).
+    # Bu kural yukarıdaki (css|js) kuralından sonra geldiği için onu override
+    # eder. Landing/login/register için ilk-sonraki sayfa açılışını hızlandırır.
+    <FilesMatch "-[A-Za-z0-9_-]{8,}\.(js|css|woff2?)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set Vary "Accept-Encoding"
+    </FilesMatch>
+    
+    # Prevent caching of HTML
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+    </FilesMatch>
+    
+    # Security Headers
+    # X-Frame-Options is intentionally set from PHP (SecurityHeadersMiddleware)
+    # instead of Apache, because the admin panel iframes the public /sira door
+    # display across subdomains and we need to skip XFO for those paths only.
+    # CSP frame-ancestors (also set by the middleware) enforces framing policy.
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove ETags (can cause caching issues)
+    Header unset ETag
+    FileETag None
+</IfModule>
+
+# Disable server signature
+ServerSignature Off
+
+# Disable directory listing
+Options -Indexes
+
+# Enable compression for text files
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Character encoding
+AddDefaultCharset UTF-8
+
+# Error pages
+ErrorDocument 403 /error/403.html
+ErrorDocument 404 /error/404.html
+ErrorDocument 500 /error/500.html

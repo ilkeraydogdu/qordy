@@ -1,0 +1,114 @@
+/* Qordy Blog — visual layer on top of the compiled Tailwind.
+   Only the bits that are specific to the blog reading experience
+   (prose typography, share buttons, article cards).                    */
+
+:root{
+  --ink-950:#050912;--ink-900:#0B1220;--ink-800:#0F172A;
+  --ink-700:#1E293B;--ink-600:#334155;--ink-500:#475569;
+  --ink-300:#94A3B8;--ink-200:#CBD5E1;--ink-100:#E2E8F0;
+  --fire-700:#1A4A8C;--fire-600:#1F5AAB;--fire-500:#2B7AC9;--fire-400:#5483F2;
+  --amber-300:#93C5FD;--amber-400:#60A5FA;--amber-500:#3B82F6;--amber-600:#2563EB;
+}
+
+html,body{background:var(--ink-950)}
+
+/* Tailwind utilities that Tailwind can't derive from our palette alone */
+.bg-ink-900{background-color:var(--ink-900)}
+.bg-ink-950{background-color:var(--ink-950)}
+.text-slate-200{color:var(--ink-200)}
+.text-slate-300{color:var(--ink-300)}
+.text-slate-400{color:#94a3b8}
+.text-slate-500{color:#64748b}
+.text-amber-300{color:var(--amber-300)}
+.border-white\/10{border-color:rgba(255,255,255,.1)}
+.border-white\/15{border-color:rgba(255,255,255,.15)}
+.border-white\/20{border-color:rgba(255,255,255,.2)}
+
+/* Reading progress bar */
+#reading-progress-track{position:fixed;inset:0 0 auto 0;height:3px;background:transparent;z-index:60;pointer-events:none}
+#reading-progress{height:100%;width:0%;background:linear-gradient(90deg,#2B7AC9 0%,#3B82F6 100%);transition:width .12s linear}
+
+/* ------- Article card grid ------- */
+.article-grid{display:grid;gap:clamp(1rem,2vw,1.75rem);grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.article-card{
+  position:relative;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,rgba(15,23,42,.7) 0%,rgba(5,9,18,.9) 100%);
+  border:1px solid rgba(203,213,225,.08);border-radius:1.25rem;overflow:hidden;
+  box-shadow:0 1px 0 0 rgba(255,255,255,.02) inset,0 30px 60px -30px rgba(2,6,14,.7);
+  transition:transform .25s cubic-bezier(.16,1,.3,1),border-color .2s,box-shadow .25s;
+  isolation:isolate;min-height:100%;
+}
+.article-card:hover{transform:translateY(-4px);border-color:rgba(96,165,250,.35);box-shadow:0 40px 80px -30px rgba(31,90,171,.55)}
+.article-card .cover{aspect-ratio:16/9;width:100%;background:#0F172A;overflow:hidden;position:relative}
+.article-card .cover img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.article-card:hover .cover img{transform:scale(1.05)}
+.article-card .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(5,9,18,.55) 100%)}
+.article-card .body{padding:1.25rem 1.35rem 1.35rem;display:flex;flex-direction:column;gap:.65rem;flex:1}
+.article-card .chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber-300);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);padding:.25rem .65rem;border-radius:9999px;width:max-content}
+.article-card h3{font-family:Fraunces,serif;font-size:1.35rem;font-weight:600;line-height:1.2;color:#fff;letter-spacing:-.01em}
+.article-card h3 a{background-image:linear-gradient(transparent calc(100% - 1px),rgba(96,165,250,.5) 1px);background-size:0 100%;background-repeat:no-repeat;transition:background-size .35s ease}
+.article-card:hover h3 a{background-size:100% 100%}
+.article-card p.excerpt{color:var(--ink-300);font-size:.95rem;line-height:1.55;margin:0;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.article-card .meta{display:flex;align-items:center;gap:.75rem;font-size:.8rem;color:var(--ink-300);margin-top:.25rem}
+.article-card .meta .dot{width:3px;height:3px;background:currentColor;border-radius:9999px;opacity:.5}
+
+/* Featured card */
+.article-card.is-featured{grid-column:1/-1}
+@media(min-width:900px){
+  .article-card.is-featured{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:stretch;min-height:420px}
+  .article-card.is-featured .cover{aspect-ratio:auto;height:100%}
+  .article-card.is-featured .body{padding:clamp(1.5rem,3vw,2.5rem);gap:1rem;justify-content:center}
+  .article-card.is-featured h3{font-size:clamp(1.75rem,3.5vw,2.5rem);line-height:1.1}
+  .article-card.is-featured p.excerpt{-webkit-line-clamp:5;font-size:1.05rem}
+}
+
+/* ------- Article prose ------- */
+.prose-blog{max-width:72ch;color:var(--ink-200);font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:1.075rem;line-height:1.78}
+.prose-blog > * + *{margin-top:1.1em}
+.prose-blog h2{font-family:Fraunces,serif;font-size:clamp(1.5rem,2.5vw,2rem);color:#fff;font-weight:600;margin-top:2em;letter-spacing:-.01em;line-height:1.22}
+.prose-blog h3{font-family:Fraunces,serif;font-size:clamp(1.2rem,1.8vw,1.5rem);color:#fff;font-weight:600;margin-top:1.6em}
+.prose-blog p{color:var(--ink-200)}
+.prose-blog a{color:var(--amber-300);text-decoration:underline;text-decoration-color:rgba(147,197,253,.35);text-underline-offset:3px;transition:color .15s}
+.prose-blog a:hover{color:#fff}
+.prose-blog strong{color:#fff;font-weight:600}
+.prose-blog ul,.prose-blog ol{padding-left:1.4em}
+.prose-blog li{margin-top:.4em}
+.prose-blog blockquote{border-left:3px solid var(--fire-500);padding:.2em 0 .2em 1.25em;color:var(--ink-200);font-style:italic;background:linear-gradient(90deg,rgba(31,90,171,.12) 0%,transparent 100%)}
+.prose-blog img{border-radius:1rem;margin-top:1.5em;margin-bottom:1.5em}
+.prose-blog code{background:rgba(148,163,184,.12);color:#dbeafe;border-radius:.35rem;padding:.15em .45em;font-family:"Space Mono","JetBrains Mono",monospace;font-size:.92em}
+.prose-blog pre{background:#0b1220;border:1px solid rgba(203,213,225,.08);border-radius:1rem;padding:1.1em 1.25em;overflow-x:auto}
+.prose-blog pre code{background:transparent;padding:0;color:#cbd5e1}
+.prose-blog hr{border:0;border-top:1px solid rgba(203,213,225,.1);margin:2.5em 0}
+
+/* ------- Share / social ------- */
+.share-rail{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+.share-rail .share-label{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-300);margin-right:.5rem}
+.share-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.5rem .85rem;border-radius:9999px;font-size:.82rem;font-weight:500;color:var(--ink-200);background:rgba(203,213,225,.06);border:1px solid rgba(203,213,225,.12);transition:background .18s,border-color .18s,color .18s,transform .18s;cursor:pointer}
+.share-btn:hover{background:rgba(59,130,246,.14);border-color:rgba(96,165,250,.4);color:#fff;transform:translateY(-1px)}
+.share-btn svg{width:15px;height:15px}
+.share-btn.is-twitter:hover{background:rgba(29,161,242,.18);border-color:rgba(29,161,242,.5)}
+.share-btn.is-facebook:hover{background:rgba(24,119,242,.18);border-color:rgba(24,119,242,.5)}
+.share-btn.is-linkedin:hover{background:rgba(10,102,194,.22);border-color:rgba(10,102,194,.5)}
+.share-btn.is-whatsapp:hover{background:rgba(37,211,102,.18);border-color:rgba(37,211,102,.5)}
+.share-btn.is-telegram:hover{background:rgba(34,158,217,.18);border-color:rgba(34,158,217,.5)}
+
+/* ------- Soro widget mount (dark theme integration) ------- */
+#soro-blog{background:transparent;color:var(--ink-200);font-family:Inter,ui-sans-serif,system-ui,sans-serif}
+#soro-blog a{color:var(--amber-300)}
+#soro-blog h1,#soro-blog h2,#soro-blog h3{font-family:Fraunces,serif;color:#fff}
+
+/* ------- Breadcrumb ------- */
+.crumb{display:inline-flex;align-items:center;gap:.55rem;font-size:.82rem;color:var(--ink-300)}
+.crumb a:hover{color:#fff}
+.crumb .sep{color:#475569}
+
+/* ------- Sidebar category chips ------- */
+.chip-row{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip-row .chip{display:inline-flex;align-items:center;padding:.4rem .95rem;border-radius:9999px;font-size:.82rem;color:var(--ink-200);background:rgba(203,213,225,.06);border:1px solid rgba(203,213,225,.12);transition:background .18s,border-color .18s,color .18s}
+.chip-row .chip:hover{background:rgba(59,130,246,.14);border-color:rgba(96,165,250,.4);color:#fff}
+.chip-row .chip.is-active{background:rgba(59,130,246,.22);border-color:rgba(96,165,250,.55);color:#fff}
+
+/* ------- Utility for empty/loading states ------- */
+.empty-state{padding:3rem 1.5rem;text-align:center;border:1px dashed rgba(203,213,225,.15);border-radius:1.25rem;background:rgba(15,23,42,.3)}
+.empty-state h3{font-family:Fraunces,serif;color:#fff;font-size:1.35rem;font-weight:600}
+.empty-state p{color:var(--ink-300);margin-top:.5rem}

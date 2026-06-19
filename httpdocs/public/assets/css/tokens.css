@@ -1,0 +1,212 @@
+/* ============================================================
+ * Qordy Design Tokens — TEK KAYNAK
+ *
+ * Bu dosya TÜM renk, spacing, tipografi, gölge, radius değerlerini
+ * merkezileştirir. View/component dosyalarında hardcoded hex
+ * renk KULLANILMAZ. Tailwind config (tailwind.config.cjs) bu
+ * değişkenleri okuyarak utility class üretir.
+ *
+ * Hiyerarşi:
+ * 1) Brand — marka kimliği (primary, accent, lime)
+ * 2) Surface — yüzeyler (kart, panel, dark mode)
+ * 3) Border — sınırlar
+ * 4) Text — metin hiyerarşisi
+ * 5) Status — semantik durum renkleri
+ * 6) Spacing — tutarlı boşluk ölçeği
+ * 7) Radius — köşe yumuşaklığı
+ * 8) Typography — yazı tipi ölçeği
+ * 9) Shadow — gölge
+ * 10) Motion — geçiş hızları
+ * ============================================================ */
+
+:root {
+ /* ----- 1) BRAND ----- */
+ --color-brand-primary: #1a1a2e; /* charcoal — başlık, koyu yüzeyler */
+ --color-brand-primary-hover: #2a2a3e;
+ --color-brand-accent: #f59e0b; /* amber — CTA, vurgu */
+ --color-brand-accent-hover: #d97706;
+ --color-brand-lime: #84cc16; /* lime — başarı vurgusu */
+
+ /* ----- 2) SURFACE ----- */
+ --color-surface-1: #ffffff; /* ana yüzey (kart, panel) */
+ --color-surface-2: #f8f9fa;  /* alt yüzey (page bg) */
+ --color-surface-3: #f1f5f9; /* alt-alt yüzey (input bg) */
+ --color-surface-dark: #0f172a; /* koyu panel (chart bg) */
+ --color-surface-dark-2: #1e293b; /* koyu panel alt */
+
+ /* ----- 3) BORDER ----- */
+ --color-border-1: #e5e7eb; /* varsayılan sınır */
+ --color-border-2: #d1d5db; /* hover/focus sınır */
+ --color-border-dark: #334155; /* koyu yüzey sınır */
+
+ /* ----- 4) TEXT ----- */
+ --color-text-primary: #111827; /* ana metin */
+ --color-text-secondary: #6b7280; /* ikincil metin (label, helper) */
+ --color-text-muted: #9ca3af; /* muted metin (placeholder) */
+ --color-text-inverse: #ffffff; /* koyu yüzey üzeri */
+ --color-text-accent: var(--color-brand-accent);
+
+ /* ----- 5) STATUS — semantik ----- */
+ --color-status-success: #16a34a;
+ --color-status-success-bg: #dcfce7;
+ --color-status-warning: #d97706;
+ --color-status-warning-bg: #fef3c7;
+ --color-status-danger: #dc2626;
+ --color-status-danger-bg: #fee2e2;
+ --color-status-info: #2563eb;
+ --color-status-info-bg: #dbeafe;
+ --color-status-neutral: #6b7280;
+ --color-status-neutral-bg: #f1f5f9;
+ --color-status-pending: #d97706; /* amber-600 */
+ --color-status-pending-bg: #fef3c7;
+ --color-status-served: #16a34a; /* served = success */
+
+ /* ----- 6) SPACING ----- */
+ --space-0: 0;
+ --space-1: 4px;
+ --space-2: 8px;
+ --space-3: 12px;
+ --space-4: 16px;
+ --space-5: 20px;
+ --space-6: 24px;
+ --space-7: 28px;
+ --space-8: 32px;
+ --space-10: 40px;
+ --space-12: 48px;
+ --space-16: 64px;
+
+ /* ----- 7) RADIUS ----- */
+ --radius-sm: 6px;
+ --radius-md: 10px;
+ --radius-lg: 14px; /* varsayılan kart radius */
+ --radius-xl: 18px;
+ --radius-2xl: 24px;
+ --radius-full: 9999px;
+
+ /* ----- 8) TYPOGRAPHY ----- */
+ --font-size-xs: 11px;
+ --font-size-sm: 12px;
+ --font-size-base: 14px;
+ --font-size-md: 16px;
+ --font-size-lg: 20px;
+ --font-size-xl: 24px;
+ --font-size-2xl: 28px;
+ --font-size-3xl: 32px;
+ --font-size-metric: 28px;
+
+ --font-weight-normal: 400;
+ --font-weight-medium: 500;
+ --font-weight-semibold: 600;
+ --font-weight-bold: 700;
+ --font-weight-black: 900;
+
+ --line-height-tight: 1.2;
+ --line-height-snug: 1.4;
+ --line-height-base: 1.5;
+ --line-height-loose: 1.75;
+
+ /* ----- 9) SHADOW ----- */
+ --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+ --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+ --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+ --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+ --shadow-focus: 0 0 0 3px rgb(245 158 11 / 0.3);
+
+ /* ----- 10) MOTION ----- */
+ --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+ --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+ --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+ /* ----- 11) Z-INDEX ----- */
+ --z-dropdown: 50;
+ --z-sticky: 100;
+ --z-modal: 200;
+ --z-toast: 300;
+}
+
+/* ============================================================
+ * Utility class alias'ları — Tailwind theme.extend ile aynı
+ * mantık. View'larda `class="text-status-success"` gibi
+ * semantik class'lar kullanılabilir.
+ * ============================================================ */
+.q-text-status-success { color: var(--color-status-success); }
+.q-text-status-warning { color: var(--color-status-warning); }
+.q-text-status-danger { color: var(--color-status-danger); }
+.q-text-status-info { color: var(--color-status-info); }
+.q-text-status-neutral { color: var(--color-status-neutral); }
+.q-text-status-pending { color: var(--color-status-pending); }
+
+.q-bg-status-success { background-color: var(--color-status-success); }
+.q-bg-status-warning { background-color: var(--color-status-warning); }
+.q-bg-status-danger { background-color: var(--color-status-danger); }
+.q-bg-status-info { background-color: var(--color-status-info); }
+
+.q-bg-status-success-soft { background-color: var(--color-status-success-bg); }
+.q-bg-status-warning-soft { background-color: var(--color-status-warning-bg); }
+.q-bg-status-danger-soft { background-color: var(--color-status-danger-bg); }
+.q-bg-status-info-soft { background-color: var(--color-status-info-bg); }
+.q-bg-status-pending-soft { background-color: var(--color-status-pending-bg); }
+
+.q-text-brand-accent { color: var(--color-brand-accent); }
+.q-bg-brand-accent { background-color: var(--color-brand-accent); }
+.q-bg-brand-primary { background-color: var(--color-brand-primary); }
+
+.q-text-label {
+ font-size: var(--font-size-xs);
+ font-weight: var(--font-weight-bold);
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ color: var(--color-text-secondary);
+}
+
+.q-text-metric {
+ font-size: var(--font-size-metric);
+ font-weight: var(--font-weight-black);
+ line-height: var(--line-height-tight);
+ letter-spacing: -0.02em;
+ color: var(--color-text-primary);
+}
+
+.q-text-h1 {
+ font-size: var(--font-size-xl);
+ font-weight: var(--font-weight-black);
+ line-height: var(--line-height-tight);
+ letter-spacing: -0.02em;
+ color: var(--color-text-primary);
+}
+@media (min-width: 640px) { .q-text-h1 { font-size: var(--font-size-2xl); } }
+@media (min-width: 768px) { .q-text-h1 { font-size: var(--font-size-3xl); } }
+
+.q-card {
+ background-color: var(--color-surface-1);
+ border: 1px solid var(--color-border-1);
+ border-radius: var(--radius-lg);
+ box-shadow: var(--shadow-sm);
+ padding: var(--space-4);
+}
+@media (min-width: 640px) { .q-card { padding: var(--space-5); } }
+
+.q-page { background-color: var(--color-surface-2); min-height: 100%; }
+
+/* ============================================================
+ * 12) TYPOGRAPHY FAMILIES (added v2.1 — Warm Ember Ops)
+ * Self-hosted/already-loaded faces only (no new CSP origins).
+ * display = Plus Jakarta Sans (geometric, distinctive)
+ * body    = Inter (refined UI text)
+ * ============================================================ */
+:root {
+ --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+ --font-body: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+ /* Dashboard warm canvas (Warm Ember Ops) */
+ --color-canvas: #faf7f2;          /* warm off-white page bg */
+ --color-canvas-soft: #f4efe8;     /* alt warm surface */
+ --color-ink: #1a1a2e;             /* charcoal ink (sidebar/topbar) */
+ --color-ink-2: #2a2a3e;
+ --color-amber-soft: #fef3c7;      /* amber-100 soft fill */
+ --color-amber-ring: rgba(245, 158, 11, 0.30);
+ --color-lime-soft: #ecfccb;       /* lime-100 */
+
+ /* Component radius default */
+ --radius-card: var(--radius-lg);
+}

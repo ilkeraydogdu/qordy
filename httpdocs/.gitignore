@@ -1,0 +1,65 @@
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+vendor/
+node_modules/
+
+# Cache
+cache/
+tmp/
+
+# Backups
+backups/
+*.sql
+!database/database_setup.sql
+!database/migrations/*.sql
+*.bak
+*.disabled
+*.backup
+
+# Tests
+tests/
+phpunit.xml
+phpstan.neon
+TESTING.md
+STATIC_ANALYSIS.md
+
+# Debug/Test scripts
+check_*.php
+test_*.php
+debug_*.php
+seed_*.php
+reseed*.php
+
+# Documentation (not needed in production)
+ARCHITECTURE.md
+docs/
+
+# Installation scripts (not needed after installation)
+install.php
+create_db.php
+init_db.php
+migrate.php
+
+# Documentation
+README.md
+
+# Database SQL files (schema is in migrations)
+database/
+.gstack/

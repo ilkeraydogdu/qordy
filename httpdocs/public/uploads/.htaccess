@@ -1,0 +1,35 @@
+# Qordy: upload dizininde PHP/CGI yürütmeyi KAPAT
+# Bir saldırgan resim/içerik yüklerken uzantıyı bypass etse bile
+# sunucu bu dizindeki .php/.phtml/.phar dosyasını çalıştıramaz.
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# FastCGI / FPM handler'larını söküp yalnızca statik dosya sun
+<FilesMatch "\.(php|phtml|phar|php3|php4|php5|php7|php8|phps|pht|cgi|pl|py|rb|sh|asp|aspx|jsp)$">
+    SetHandler none
+    RemoveHandler .php .phtml .phar .php3 .php4 .php5 .php7 .php8 .phps .pht
+    RemoveType .php .phtml .phar
+    ForceType application/octet-stream
+    Header set Content-Disposition "attachment"
+    Require all denied
+</FilesMatch>
+
+# .htaccess override ile yukarıdaki kuralları geçmeye çalışmayı engelle
+<Files ".htaccess">
+    Require all denied
+</Files>
+<Files ".user.ini">
+    Require all denied
+</Files>
+
+# Dizin listelemesini kapat
+Options -Indexes -ExecCGI
+AddType text/plain .log .sh .py .pl .rb
