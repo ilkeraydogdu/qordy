@@ -1,0 +1,34 @@
+---
+description: Qordy multi-tenant SaaS — paths, ops brief, when to audit
+alwaysApply: true
+---
+
+# Qordy project context
+
+**Root:** `/var/www/vhosts/qordy.com`
+
+| Area | Path |
+|------|------|
+| PHP backend | `httpdocs/` (`httpdocs/app/` application code) |
+| Flutter web mobile | `flutter_app/` → built to `httpdocs/public/mobile-app/` |
+| Database / env | `httpdocs/.env` (local credentials; never commit) |
+
+## Agent brief
+
+Read [`CLAUDE.md`](../../CLAUDE.md) for active tasks, tenant/subdomain repair, smoke checks, PHP/Flutter build commands, and completion criteria.
+
+## Audits and deep reviews
+
+When the user asks for **audit**, **architecture review**, **security review**, **performance review**, **codebase analysis**, or similar:
+
+1. Read [`AUDIT.md`](../../AUDIT.md) first (analysis before changes; reports to `docs/audit/`).
+2. Prefer enabling the **audit-directive** Cursor rule or `@AUDIT.md` in the prompt for full discipline.
+
+Do not mix audit reports into CLAUDE.md unless the user requests it.
+
+## Conventions
+
+- Use central services (`DependencyFactory`, `NavigationService`); avoid mock/hardcoded production data.
+- Minimal diffs; match existing patterns.
+- No commits/push unless the user asks.
+- Live chat / in-app support was removed — do not reintroduce without explicit request.

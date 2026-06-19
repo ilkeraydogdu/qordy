@@ -1,0 +1,72 @@
+---
+description: Full codebase audit discipline per AUDIT.md — analysis before code changes
+alwaysApply: false
+---
+
+# Qordy audit discipline
+
+**Start every audit session by reading** [`AUDIT.md`](../../AUDIT.md) at the project root (`/var/www/vhosts/qordy.com`). That file is the source of truth; this rule is a Cursor-side summary.
+
+## Core rules
+
+1. **Analysis before code** — Do not refactor or fix during discovery. Map the system, report findings, then wait for explicit user approval before implementation.
+2. **Do not trust user examples** — Independently verify hotspots, assumptions, and scope.
+3. **Challenge architecture** — Question boundaries, auth, data model, caching, and multi-tenant design.
+4. **Depth over speed** — Continue until meaningful findings for the scoped phase are exhausted.
+
+## Finding format (required)
+
+Each finding must include: **Severity** (Critical | High | Medium | Low), **Description**, **Impact**, **Evidence** (paths, routes, snippets), **Recommendation**.
+
+## Reports
+
+Write dated phased reports under `docs/audit/`, e.g. `docs/audit/2026-06-02-architecture.md`. Do not overwrite prior reports; add new dated files.
+
+After audit: prioritized roadmap and risk assessment before any approved changes.
+
+## Audit phases (from AUDIT.md)
+
+| Phase | Focus |
+|-------|--------|
+| 1 | Full discovery — inventory, system map |
+| 2 | Architecture — modularity, coupling, SOLID, god classes |
+| 3 | Frontend — views, assets, duplication, large files |
+| 4 | Backend — services, APIs, transactions, business logic placement |
+| 5 | Database — schema, indexes, integrity |
+| 6 | Security — auth, RBAC, IDOR, XSS, CSRF, SQLi, secrets |
+| 7 | Performance — N+1, caching, bottlenecks |
+| 8 | SaaS readiness — tenant isolation, billing, scale |
+| 9 | Code quality — dead code, duplication, complexity |
+
+Scoped audits: run the relevant phase(s) plus enough discovery (Phase 1) to avoid blind spots.
+
+## Qordy paths (quick reference)
+
+- Backend: `httpdocs/app/` (routes, controllers, services, views, middleware, migrations)
+- Tests: `httpdocs/tests/`
+- Flutter: `flutter_app/lib/` → deploy `httpdocs/public/mobile-app/`
+- Ops scripts: `httpdocs/app/scripts/`
+- Env: `httpdocs/.env` (never commit secrets)
+
+## Validation (after **approved** changes only)
+
+From `httpdocs/`:
+
+```bash
+/opt/plesk/php/8.2/bin/php vendor/bin/phpunit
+```
+
+Also: `php -l` on touched PHP files; smoke affected routes; for Flutter — `flutter test` on touched areas; rebuild web bundle if deploy surface changed.
+
+If validation fails: stop, fix, retest before continuing.
+
+## Claude Code slash commands (not available in Cursor)
+
+`/full-audit`, `/architecture-audit`, `/frontend-audit`, `/backend-audit`, `/database-audit`, `/security-audit`, `/performance-audit`, `/saas-audit`, `/quality-audit` live in `.claude/commands/` for Claude Code only.
+
+In Cursor: enable this rule (Rules picker) or `@AUDIT.md` / ask for a phased audit by name (e.g. "run Phase 6 security audit per AUDIT.md").
+
+## Related docs
+
+- **CLAUDE.md** — active ops tasks and agent brief (not audit narrative)
+- **httpdocs/PANEL_REDESIGN.md** — UI refactor tracker; cross-reference, do not duplicate

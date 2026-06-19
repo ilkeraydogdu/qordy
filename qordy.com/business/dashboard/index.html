@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qordy — Uygulama İndirme Merkezi</title>
+  <meta name="description" content="Qordy işletme ve personel uygulamalarını indirin.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1F3A8A;
+      --navy-dark: #0B1F4D;
+      --amber: #F59E0B;
+      --amber-dark: #D97706;
+      --surface: #F8FAFC;
+      --card: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #1e40af 100%);
+      padding: 48px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(245,158,11,.20) 0%, transparent 60%);
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .logo-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--amber) 0%, var(--amber-dark) 100%);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 8px 24px rgba(245,158,11,.45);
+    }
+
+    .logo-text {
+      font-size: 28px; font-weight: 800;
+      color: #fff; letter-spacing: -0.5px;
+    }
+
+    header h1 {
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 700; color: #fff;
+      letter-spacing: -0.3px;
+      position: relative;
+    }
+
+    header p {
+      margin-top: 10px; font-size: 15px;
+      color: rgba(255,255,255,.65);
+      position: relative;
+    }
+
+    /* ── Main ────────────────────────────────────────────────────────── */
+    main {
+      max-width: 840px;
+      margin: -32px auto 0;
+      padding: 0 16px 64px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── Card ────────────────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,.07);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.12); }
+
+    .card-header {
+      padding: 28px 28px 20px;
+      display: flex; align-items: center; gap: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-icon {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; flex-shrink: 0;
+    }
+
+    .isletme .app-icon {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      box-shadow: 0 6px 20px rgba(31,58,138,.35);
+    }
+
+    .personel .app-icon {
+      background: linear-gradient(135deg, var(--amber) 0%, var(--amber-dark) 100%);
+      box-shadow: 0 6px 20px rgba(245,158,11,.35);
+    }
+
+    .card-title { font-size: 18px; font-weight: 700; }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+    .card-body { padding: 20px 28px 28px; }
+
+    .feature-list {
+      list-style: none;
+      display: grid; gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .feature-list li {
+      font-size: 13px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      font-size: 11px; font-weight: 700;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .isletme .feature-list li::before { background: rgba(31,58,138,.1); color: var(--navy); }
+    .personel .feature-list li::before { background: rgba(245,158,11,.12); color: var(--amber-dark); }
+
+    .meta-row {
+      display: flex; gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      font-size: 11px; color: var(--text-muted);
+      background: var(--surface);
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .meta-item strong { color: var(--text); font-weight: 600; }
+
+    .btn-download {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 14px;
+      border-radius: 14px;
+      border: none; cursor: pointer;
+      font-size: 15px; font-weight: 700;
+      text-decoration: none;
+      transition: opacity .15s, transform .15s;
+    }
+
+    .btn-download:hover { opacity: .88; transform: scale(.985); }
+    .btn-download:active { transform: scale(.97); }
+
+    .isletme .btn-download {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(31,58,138,.35);
+    }
+
+    .personel .btn-download {
+      background: linear-gradient(135deg, var(--amber) 0%, var(--amber-dark) 100%);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(245,158,11,.35);
+    }
+
+    .btn-download .icon { font-size: 18px; }
+
+    .coming-soon {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 14px;
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1.5px dashed var(--border);
+      color: var(--text-muted);
+      font-size: 14px; font-weight: 600;
+    }
+
+    /* ── Info section ────────────────────────────────────────────────── */
+    .info-section {
+      margin-top: 40px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+    }
+
+    .info-section h2 {
+      font-size: 16px; font-weight: 700;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .steps {
+      display: grid; gap: 12px;
+      list-style: none; counter-reset: steps;
+    }
+
+    .steps li {
+      display: flex; gap: 12px; align-items: flex-start;
+      font-size: 13px; color: var(--text-muted);
+    }
+
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--navy); color: #fff;
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+
+    footer {
+      text-align: center; padding: 32px 16px;
+      font-size: 12px; color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🍽️</div>
+    <span class="logo-text">Qordy</span>
+  </div>
+  <h1>Uygulama İndirme Merkezi</h1>
+  <p>Restoran yönetiminizi mobilde taşıyın</p>
+</header>
+
+<main>
+  <div class="cards">
+
+    <!-- İşletme App -->
+    <div class="card isletme">
+      <div class="card-header">
+        <div class="app-icon">🏪</div>
+        <div>
+          <div class="card-title">Qordy İşletme</div>
+          <div class="card-subtitle">Yönetim & Dashboard</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="feature-list">
+          <li>Gerçek zamanlı sipariş takibi</li>
+          <li>Masa yönetimi & oturma planı</li>
+          <li>Gelir raporları & analitik</li>
+          <li>Menü & ürün yönetimi</li>
+          <li>Personel yönetimi</li>
+        </ul>
+        <div class="meta-row">
+          <span class="meta-item">Sürüm <strong>1.2.0</strong></span>
+          <span class="meta-item">Android <strong>6.0+</strong></span>
+          <span class="meta-item"><strong>49 MB</strong></span>
+        </div>
+        <a href="/business/assets/apk/qordy-isletme.apk" class="btn-download" id="btn-isletme-download">
+          <span class="icon">⬇</span>
+          APK İndir — Android
+        </a>
+      </div>
+    </div>
+
+    <!-- Personel App -->
+    <div class="card personel">
+      <div class="card-header">
+        <div class="app-icon">👤</div>
+        <div>
+          <div class="card-title">Qordy Personel</div>
+          <div class="card-subtitle">Garson & Mutfak</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="feature-list">
+          <li>Sipariş alma & mutfağa iletme</li>
+          <li>Masa ve hesap işlemleri</li>
+          <li>Vardiya takibi</li>
+          <li>Anlık bildirimler</li>
+          <li>Garson, mutfak, kasiyer rolleri</li>
+        </ul>
+        <div class="meta-row">
+          <span class="meta-item">Sürüm <strong>1.0.0</strong></span>
+          <span class="meta-item">Android <strong>6.0+</strong></span>
+          <span class="meta-item"><strong>~35 MB</strong></span>
+        </div>
+        <div class="coming-soon" id="btn-personel-download">
+          🔔 Yakında kullanıma açılacak
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Install guide -->
+  <div class="info-section">
+    <h2>📲 Kurulum Rehberi</h2>
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <span>Yukarıdaki <strong>APK İndir</strong> butonuna tıklayın ve dosyanın indirilmesini bekleyin.</span>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <span>Android cihazınızda <strong>Ayarlar → Güvenlik → Bilinmeyen kaynaklardan yükleme</strong> seçeneğini etkinleştirin.</span>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <span>İndirilen APK dosyasını açarak kurulumu tamamlayın.</span>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <span>Qordy hesabınızla giriş yapın. İlk girişte e-posta ve şifrenizi kullanın.</span>
+      </li>
+    </ol>
+  </div>
+</main>
+
+<footer>
+  © 2025 Qordy — Restoran Yönetim Sistemi &nbsp;|&nbsp; Destek: destek@qordy.com
+</footer>
+
+</body>
+</html>

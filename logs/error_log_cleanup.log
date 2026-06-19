@@ -1,0 +1,10 @@
+[2026-06-19 00:30:01] Starting error log cleanup...
+  Noise patterns deleted: 1
+  Old resolved errors deleted: 0
+  Errors older than 30 days deleted: 8
+  JavaScript old errors deleted: 0
+
+[2026-06-19 00:30:02] Cleanup completed!
+  Total deleted: 9
+  Remaining rows: 2216
+  Duration: 1062ms
