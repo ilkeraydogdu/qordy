@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  QORDY network security policy.
+
+  Rules:
+    * Cleartext HTTP is disabled app-wide (default base-config) — every API
+      call MUST travel over TLS.
+    * `qordy.com` and its subdomains are pinned to the "system" trust
+      anchor set. We intentionally skip public-key pinning here because
+      it would hard-brick older installs whenever we rotate the wildcard
+      certificate; we instead rely on HSTS on the server side plus TLS 1.2+
+      cipher enforcement.
+    * Debug builds additionally trust user-installed anchors so developers
+      can attach a proxy (e.g. Charles) during QA. Release builds DO NOT —
+      that's the default for this file.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">qordy.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
